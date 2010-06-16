@@ -8,16 +8,25 @@ class Abingo::Alternative < ActiveRecord::Base
     Digest::MD5.hexdigest(Abingo.salt + test_name + alternative_name.to_s)
   end
 
-  def self.score_conversion(test_name)
-    viewed_alternative = Abingo.find_alternative_for_user(test_name,
-      Abingo::Experiment.alternatives_for_test(test_name))
+  def self.score_conversion(test_name, alternative_name = nil)
+    if alternative_name.nil?
+      viewed_alternative = Abingo.find_alternative_for_user(test_name,
+        Abingo::Experiment.alternatives_for_test(test_name))
+    else
+      viewed_alternative = alternative_name
+    end
+
     self.update_all("conversions = conversions + 1", :lookup => self.calculate_lookup(test_name, viewed_alternative))
   end
 
-  def self.score_participation(test_name)
-    viewed_alternative = Abingo.find_alternative_for_user(test_name,
-      Abingo::Experiment.alternatives_for_test(test_name))
+  def self.score_participation(test_name, alternative_name = nil)
+    if alternative_name.nil?
+      viewed_alternative = Abingo.find_alternative_for_user(test_name,
+        Abingo::Experiment.alternatives_for_test(test_name))
+    else
+      viewed_alternative = alternative_name
+    end
+
     self.update_all("participants = participants + 1", :lookup => self.calculate_lookup(test_name, viewed_alternative))
   end
-
 end
